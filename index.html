@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>3Q Đa Vũ Trụ Manga</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#12121c;color:#fff}
+#game{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+#top{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px;padding:8px;background:#1d1d30;font-size:12px}
+#top .ph{display:flex;gap:4px;align-items:center;white-space:nowrap}
+.bk{display:flex;flex-direction:column;align-items:center;padding:3px 6px;line-height:1.1;background:#b45309;font-size:16px}
+.bk small{font-size:8px}
+button{border:0;border-radius:8px;padding:8px 10px;background:#4f46e5;color:#fff;font-size:14px;cursor:pointer}
+#tt{text-align:center;color:#fde68a;font-size:13px;min-height:20px;padding:4px}
+#san{display:flex;gap:4px;padding:8px;margin:0 6px;background:linear-gradient(#26382a,#18231b);border-radius:12px;align-items:center}
+.luoi{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;flex:1}
+.vs{font-weight:bold;color:#f87171}
+.the{min-height:60px;background:#ffffff0d;border-radius:6px;text-align:center;padding:2px;position:relative}
+.av{font-size:26px;border:2px solid #888;border-radius:8px;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;line-height:1;overflow:hidden;background:#0006}
+.av img,.chip img,.o img,.big img{width:100%;height:100%;object-fit:contain;object-position:center top;display:block}
+.chip img{height:auto;aspect-ratio:1/1;border-radius:6px;background:#0006}
+.big{width:140px;height:140px;margin:0 auto 8px;font-size:90px;display:flex;align-items:center;justify-content:center;border:3px solid #888;border-radius:12px;overflow:hidden;background:#0006}
+.the.song{animation:tho 2s ease-in-out infinite}
+@keyframes tho{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.hp,.en{height:5px;background:#444;margin-top:2px;border-radius:3px}
+.hp i{display:block;height:5px;background:#22c55e;border-radius:3px}
+.en{height:10px;position:relative}.en i{display:block;height:10px;background:#38bdf8;border-radius:3px}
+.en b{position:absolute;left:0;right:0;top:0;font-size:8px;line-height:10px;text-align:center;font-weight:normal}
+.bd{font-size:9px;min-height:11px}
+.chem{position:fixed;width:60px;height:60px;z-index:20;pointer-events:none;background:linear-gradient(135deg,transparent 40%,#fff 47%,#9cf 53%,transparent 60%)}
+.tia{position:fixed;width:14px;height:14px;border-radius:50%;z-index:20;box-shadow:0 0 8px #fff;pointer-events:none}
+.pop{position:fixed;font-weight:bold;font-size:12px;z-index:20;pointer-events:none;text-shadow:0 0 3px #000}
+#nav{margin-top:auto;display:flex;gap:4px;padding:8px;background:#1d1d30;position:sticky;bottom:0}
+#nav button{flex:1;font-size:11px;padding:10px 1px}
+#ov{display:none;position:fixed;inset:0;background:#12121cf5;z-index:50;flex-direction:column;max-width:480px;margin:0 auto}
+#hd{display:flex;justify-content:space-between;align-items:center;padding:10px;background:#1d1d30;font-size:16px}
+#nd{overflow:auto;flex:1;padding:10px;-webkit-overflow-scrolling:touch}
+.ds{display:flex;flex-wrap:wrap;gap:8px}
+.chip{width:72px;text-align:center;border:2px solid #888;border-radius:8px;padding:4px;font-size:22px;background:#0004;cursor:pointer}
+.chip small{display:block;font-size:10px}
+.r{display:flex;justify-content:space-between;align-items:center;padding:8px;margin:4px 0;background:#ffffff12;border-radius:8px}
+.fg{display:grid;grid-template-columns:repeat(3,70px);gap:6px;justify-content:center;margin:8px 0}
+.o{height:70px;border:2px dashed #666;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:30px;position:relative;cursor:pointer}
+.o.sel{border-color:#fde047;background:#fde04722}
+.o b{position:absolute;top:1px;left:4px;font-size:10px;color:#aaa}
+.sk{padding:8px;margin:4px 0;background:#ffffff12;border-radius:8px;cursor:pointer;font-size:14px}
+.ic{display:inline-block;width:26px;height:26px;border:2px solid #fbbf24;border-radius:6px;text-align:center;line-height:22px;margin-right:6px}
+table{width:100%;font-size:12px;border-collapse:collapse}td,th{padding:3px;border-bottom:1px solid #333;text-align:right}td:first-child,th:first-child{text-align:left}
+.msg{color:#fde68a;margin:6px 0}
+</style>
+</head>
+<body>
+<div id="game">
+  <div id="top"><div id="tin"></div><div class="ph"><button onclick="pCD()">⚙️</button><button class="bk" onclick="pCau()">📖<small>Câu chuyện</small></button><button onclick="pShop()">🛒</button><button onclick="pThu()">✉️</button></div></div>
+  <div id="tt"></div>
+  <div id="san"><div class="luoi" id="gt"></div><div class="vs">VS</div><div class="luoi" id="gd"></div></div>
+  <div id="nav">
+    <button onclick="pQuay()">🎰 Quay tướng</button><button onclick="pDoiHinh()">🧩 Đội hình</button>
+    <button onclick="pNC()">⬆️ Nâng cấp</button><button onclick="pBalo()">🎒 Balo</button><button onclick="pTH()">🌾 Thu hoạch</button>
+  </div>
+</div>
+<div id="ov"><div id="hd"><b id="ten"></b><button onclick="dong()">✕ Đóng</button></div><div id="nd"></div></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const MAU={D:"#9ca3af",C:"#22c55e",B:"#3b82f6",A:"#a855f7",S:"#f97316",LR:"#ef4444",EV:"#ec4899"},TH=["LR","EV","S","A","B","C","D"];
+
+// ===== 1. DANH SÁCH TƯỚNG =====
+// c=năng lượng tiêu hao (có c là chiêu chủ động), mul=% công, k=số mục tiêu (99=tất cả), p=cách chọn (low=thấp máu nhất, rand=ngẫu nhiên)
+// burn/gh/st(choáng)/cl(xóa năng lượng)=hiệu ứng, kl=Kết Liễu nếu máu địch dưới x%, sl=tự mất % máu, eh=năng lượng nhận mỗi địch trúng
+// Bị động: m=cộng chỉ số, tm=cộng cho cả đội, gr=tăng mỗi lượt, inv=vô địch, en0=năng lượng khởi đầu thêm, nb=hiệu ứng đánh thường...
+const H=[
+{id:"sai",t:"LR",n:"SaiTaMa",e:"👊",s:[
+ {n:"Đấm nghiêm túc",d:"Gây 800% công lên 1 mục tiêu. Địch dưới 50% máu kèm Kết Liễu.",c:100,mul:800,kl:50},
+ {n:"Tăng trưởng vô cực",d:"Nhận 15% công mỗi lượt, không giới hạn stack.",gr:["atk",15,1e9]},
+ {n:"Phá vỡ giới hạn",d:"Vô địch mọi lượt của trận đấu.",inv:99999},
+ {n:"One punch man",d:"Nhận 40% giảm sát thương, thêm 20% tốc độ.",m:{red:40,spd:20}}]},
+{id:"goku",t:"LR",n:"Goku UI",e:"🌟",s:[
+ {n:"Nguyên Khí Cầu",d:"Gây 250% công lên toàn bộ địch kèm 5 stack Thiêu Đốt và Giảm Hồi Máu trong 3 lượt.",c:150,mul:250,k:99,burn:5,gh:3},
+ {n:"Ultra Instinct Giant Form",d:"Đánh thường kèm Xóa Năng Lượng.",nb:{cl:1}},
+ {n:"Hakai",d:"Gây sát thương lên kẻ địch dưới 30% máu sẽ Kết Liễu.",exe:30},
+ {n:"Bản Năng Vô Cực",d:"Nhận 99% né, thêm 20% tốc độ.",m:{dodge:99,spd:20}}]},
+{id:"garou",t:"S",n:"Garou God",e:"🥋",s:[
+ {n:"Siêu Tân Tinh Bộc Phát",d:"Gây 500% công lên 3 mục tiêu, kèm Xóa Năng Lượng.",c:100,mul:500,k:3,cl:1},
+ {n:"Cổng Không Gian",d:"Cả đội nhận thêm 50% tỉ lệ phản đòn.",tm:{ctr:50}},
+ {n:"Tiến Hóa Võ Thuật",d:"Mỗi khi có kẻ địch chết nhận 100% công trong 2 lượt tiếp theo.",kill:[100,2]},
+ {n:"Sao Chép Saitama",d:"Nhận 100% chí mạng, thêm 10% tốc độ.",m:{crit:100,spd:10}}]},
+{id:"bu",t:"S",n:"Majin Buu",e:"🍬",s:[
+ {n:"Hấp thụ",d:"Gây 400% công lên kẻ địch thấp máu nhất kèm Xóa Năng Lượng. Máu địch dưới 40% kèm Kết Liễu.",c:100,mul:400,p:"low",cl:1,kl:40},
+ {n:"Tia biến Kẹo",d:"Khi nhận sát thương có 30% tạo Choáng lên kẻ địch đó.",hs:30},
+ {n:"AuRa Tà Ác",d:"Cả đội nhận 35% giảm sát thương.",tm:{red:35}},
+ {n:"Tái sinh Tuyệt đối",d:"Mỗi lượt nhận thêm 5% hồi máu (không giới hạn stack), cộng sẵn 20% hồi máu theo lượt.",gr:["regen",5,1e9],m:{regen:20}}]},
+{id:"naruto",t:"A",n:"Uzumaki Naruto",e:"🍥",s:[
+ {n:"Mồm khuyên can tay nặn Rasengan",d:"Gây 100% công lên toàn bộ địch kèm 3 stack Thiêu Đốt.",c:150,mul:100,k:99,burn:3},
+ {n:"Lục Đạo Tiên Nhân Thuật",d:"Đánh thường kèm 2 stack Thiêu Đốt.",nb:{burn:2}},
+ {n:"Chế độ Baryon",d:"Nhận thêm 30% công, 10% tốc độ.",m:{atk:30,spd:10}}]},
+{id:"luffy",t:"A",n:"Luffy gear 5",e:"🏴‍☠️",s:[
+ {n:"Bá Vương Thần Hầu Chưởng",d:"Gây 200% công lên 5 mục tiêu.",c:100,mul:200,k:5},
+ {n:"Gear 5",d:"Mỗi lượt nhận 5% công, tối đa 5 stack.",gr:["atk",5,25]},
+ {n:"Haki",d:"Nhận thêm 50% liên kích, 50% phản đòn.",m:{multi:50,ctr:50}}]},
+{id:"ngokhong",t:"A",n:"Ngộ Không Tề Thiên Võ Thánh",e:"🐵",s:[
+ {n:"Vũ điệu Định Hải Thần Châm",d:"Gây 100% công lên tất cả mục tiêu, mỗi kẻ địch trúng chiêu giúp bản thân nhận 50 năng lượng.",c:250,mul:100,k:99,eh:50},
+ {n:"Kim Cương Bất Hoại Thân",d:"Nhận 1 lượt Vô địch sau khi tung chiêu.",ia:1},
+ {n:"72 Phép Địa Sát",d:"Nhận 72% chí mạng, 36% giảm sát thương.",m:{crit:72,red:36}}]},
+{id:"gojo",t:"A",n:"Gajo Satoro",e:"🕶️",s:[
+ {n:"Hư Thức - Tử",d:"Gây 300% công lên 2 mục tiêu, kèm Xóa Năng Lượng.",c:200,mul:300,k:2,cl:1},
+ {n:"Vô Hạ Hạn",d:"Cả đội nhận 10% tốc độ.",tm:{spd:10}},
+ {n:"Bành Trướng Lãnh Địa",d:"Nhận thêm 100 năng lượng khởi đầu.",en0:100}]},
+{id:"titan",t:"B",n:"Titan Đại Hình",e:"🦍",s:[
+ {n:"Vụ nổ nhiệt lượng",d:"Gây 120% công lên toàn bộ địch, bản thân mất 20% máu tối đa.",c:300,mul:120,k:99,sl:20},
+ {n:"Siêu Đại Hình 60m",d:"Nhận 300 năng lượng khi bắt đầu trận, thêm 60% máu.",en0:300,m:{hp:60}}]},
+{id:"tanjiro",t:"B",n:"Komodo Tanjiro",e:"☀️",s:[
+ {n:"Hơi Thở Mặt Trời",d:"Gây 300% công lên 1 mục tiêu.",c:100,mul:300},
+ {n:"Máu Quỷ Hoàn Hảo",d:"Nhận 30% công, Vô địch trong 2 lượt đầu trận.",m:{atk:30},inv:2}]},
+{id:"daniel",t:"B",n:"Park H Súc",e:"🦾",s:[
+ {n:"Vô thức",d:"Khi dưới 50% máu, nhận 50% công và 10% tốc độ.",lo:[50,50,10]},
+ {n:"Cơ thể hoàn hảo",d:"Nhận 20% công, 20% máu.",m:{atk:20,hp:20}}]},
+{id:"baki",t:"B",n:"BaKa Hana",e:"🦖",s:[
+ {n:"Khủng long hình quyền",d:"Gây 200% công lên 1 mục tiêu.",c:50,mul:200},
+ {n:"Lưng Quỷ",d:"Nhận 20% công, máu, giảm sát thương, tốc độ.",m:{atk:20,hp:20,red:20,spd:20}}]},
+{id:"twob",t:"EV",n:"2B",e:"🤖",s:[{n:"Laser Hammer",d:"Gây 250% công lên toàn bộ kẻ địch.",c:100,mul:250,k:99}]},
+{id:"tifa",t:"EV",n:"Tifa Lockhart",e:"🥊",s:[{n:"Thiên Đường Cuối Cùng",d:"Gây 265% công lên 3 mục tiêu kèm Choáng 1 lượt.",c:100,mul:265,k:3,st:1}]},
+{id:"mitxuri",t:"EV",n:"Kanjiro Mitsuri",e:"🌸",s:[{n:"Hơi Thở Tình Yêu",d:"Gây 150% công lên 3 mục tiêu kèm Giảm Hồi Máu trong 3 lượt.",c:100,mul:150,k:3,gh:3}]},
+{id:"quan",t:"C",n:"Quan Công",e:"🗡️",s:[{n:"Long Nguyệt Trảm",d:"Gây 80% công lên 3 kẻ địch.",c:150,mul:80,k:3}]},
+{id:"lu",t:"C",n:"Lữ Bố",e:"🔱",s:[{n:"Nhân Trung Lữ Bố Mã Trung Xích Thố",d:"Gây 100% công lên 2 kẻ địch.",c:150,mul:100,k:2}]},
+{id:"trieu",t:"C",n:"Triệu Vân",e:"🐎",s:[{n:"Chọc",d:"Gây 70% công lên toàn bộ địch.",c:150,mul:70,k:99}]},
+{id:"tran",t:"D",n:"Trần Bình",e:"🧑",s:[{n:"Npc tấn công",d:"Gây 67% công lên 2 kẻ địch và Đóng Băng.",c:200,mul:67,k:2,fz:1}]},
+{id:"dasisoi",t:"D",n:"Độ Mi Xi",e:"🎤",s:[{n:"Vũ à Vũ? Em đừng chối",d:"Gây 2 stack Thiêu Đốt lên toàn bộ kẻ địch.",c:200,mul:0,k:99,burn:2}]}
+];
+
+// ===== TƯỚNG EVENT: mỗi dòng = [mã, tên, tên chiêu, thông số]. Mô tả chiêu tự sinh từ thông số =====
+// c=năng lượng tiêu hao (có c là chủ động) mul=%công k=số địch(99=tất cả) p="rand" st=choáng gh=giảm hồi máu cl=xóa NL burn=thiêu đốt kl=kết liễu dưới x% sl=tự mất %máu sh=tự hồi %máu
+// a=đối tượng đồng minh: self all top(lực chiến cao nhất) top2 topatk(công cao nhất) low(thấp máu nhất) low2 selftop
+// en=năng lượng hl=hồi %máu ha=hồi theo %công hot=[%,lượt] bf=buff t=số lượt inv=vô địch fa=tăng công bằng %công người dùng
+// bị động: m(bản thân) tm(cả đội) top top2 hi(máu cao nhất) gr(mỗi lượt tăng)
+const NCS={atk:"công",hp:"máu",spd:"tốc độ",dodge:"né",hit:"trúng",crit:"chí mạng",red:"giảm sát thương",ls:"hút máu",ctr:"phản đòn",multi:"liên kích",regen:"hồi máu theo lượt"};
+function mota(s){const B=o=>Object.keys(o).map(k=>o[k]+"% "+NCS[k]).join(", "),P=[],tt=s.t?" trong "+s.t+" lượt":"",
+ W={top:"Đồng minh có lực chiến cao nhất",top2:"2 đồng minh có lực chiến cao nhất",topatk:"Đồng minh có công cao nhất",low:"Đồng minh thấp máu nhất",low2:"2 đồng minh thấp máu nhất",self:"Bản thân",all:"Cả đội",selftop:"Bản thân và đồng minh có lực chiến cao nhất"},x=[];
+ if(s.cl)x.push("Xóa Năng Lượng");if(s.burn)x.push(s.burn+" stack Thiêu Đốt");if(s.gh)x.push("Giảm Hồi Máu "+s.gh+" lượt");if(s.st)x.push("Choáng "+s.st+" lượt");
+ if(s.mul||s.k)P.push("Gây "+(s.mul?s.mul+"% công":"hiệu ứng")+" lên "+(s.k>9?"toàn bộ kẻ địch":(s.k||1)+(s.p==="rand"?" kẻ địch ngẫu nhiên":" mục tiêu"))+(x.length?" kèm "+x.join(", "):"")+(s.kl?"; địch dưới "+s.kl+"% máu bị Kết Liễu":""));
+ if(s.sl)P.push("Bản thân mất "+s.sl+"% máu tối đa");if(s.sh)P.push("Bản thân hồi "+s.sh+"% máu tối đa");
+ if(s.a){const a=[];if(s.en)a.push("nhận "+s.en+" năng lượng");if(s.hl)a.push("hồi "+s.hl+"% máu tối đa");if(s.ha)a.push("hồi máu bằng "+s.ha+"% công của người dùng chiêu");if(s.hot)a.push("hồi "+s.hot[0]+"% máu mỗi lượt trong "+s.hot[1]+" lượt");if(s.inv)a.push("nhận Vô địch "+s.inv+" lượt");if(s.bf)a.push("nhận "+B(s.bf)+tt);if(s.fa)a.push("được tăng công bằng "+s.fa+"% công của người dùng chiêu"+tt);P.push(W[s.a]+" "+a.join(", "))}
+ if(s.m)P.push("Nhận "+B(s.m)+" vào chỉ số bản thân");if(s.tm)P.push("Cả đội nhận "+B(s.tm));if(s.top)P.push("Đồng minh có lực chiến cao nhất nhận "+B(s.top));if(s.top2)P.push("2 đồng minh có lực chiến cao nhất nhận "+B(s.top2));
+ if(s.hi)P.push("Đồng minh có máu cao nhất nhận "+B(s.hi));if(s.gr)P.push("Mỗi lượt nhận "+s.gr[1]+"% "+NCS[s.gr[0]]+", không giới hạn stack");if(s.inv>9999)P.push("Vô địch mọi lượt, nhận thêm giảm sát thương");
+ return P.join(". ")+"."}
+const EJ=["🌸","💫","🎀","🔮","🌙","⭐","🍀","🦋"];
+[["teacher2","2 Taboo Spell Female Teacher","Nhiệm Vụ",{top:{ctr:200,multi:50}}],
+["cissnei","Cissnei","7R",{m:{atk:25,hp:25}}],["yuffie","Yuffie","Đi chụp ảnh",{m:{atk:50,crit:50,multi:50}}],
+["power","PoWer","Trời nóng thì kệ",{c:100,a:"top",en:150}],["ranguiku","Ranguiku","Nhà hỏng rỉ nước",{top:{ls:250}}],
+["shizuku","Shizuku","Youtube sau hậu trường",{m:{atk:55,ctr:100}}],["nikki","Infinity Nikki","Baby Doll",{m:{atk:45,multi:55}}],
+["yuu","Yuu","Về quê",{m:{atk:55,red:55}}],["hanako","Hanako","Thức giấc",{m:{atk:50,hp:100}}],
+["spider","Spider-Sister","Nhện hút tơ",{c:100,mul:100,k:1,p:"rand",st:1,gh:1}],["fiona","Fiona, Fern and Stark","Bị bắt, tình nguyện",{m:{hp:50,red:50}}],
+["nagisa","Nagisa, Patty, Nanami, Sayuri","Bị quấy phá",{c:100,a:"self",bf:{red:55},hot:[15,3],t:3}],
+["leifang","Leifang, Elise, Lobelia, Momiji, Kokoro, Hitomi, Aerith","Ngủ",{c:100,a:"self",inv:2,hot:[50,2]}],
+["marie","Marie and Honoka","Bị xóa kí ức",{c:100,a:"self",bf:{atk:150},t:3}],["kosaka","Kosaka và Kisaki","Nhớ quay lại",{c:100,a:"low",hl:150}],
+["sensei","Spectacled Sensei's","Phần thưởng của cô giáo",{top:{crit:100}}],["ayane","Tendo Ayane","Chơi game thua",{c:100,a:"top2",bf:{multi:250},t:2}],
+["hell","Girl in Hell","Khóc lóc dưới địa ngục",{c:50,a:"self",bf:{red:50}}],["elves","Thần Elves","Nước bị chiếm đoạt",{c:100,a:"self",hl:30,hot:[10,2]}],
+["reina","Reina","Ẩn trong bồn tắm",{c:100,a:"selftop",inv:2}],["hasshaku","Hasshaku-sama","Ma nữ",{c:100,mul:345,kl:20}],
+["dimitrescu","Dimitrescu","Tấn công Ethan",{c:100,mul:333,st:1}],["ingrid","Ingrid","Làm thêm quán bar",{c:100,a:"low2",en:100}],
+["sarah","Sarah","Giúp đỡ clone",{c:100,a:"low",bf:{ctr:300},t:2}],["backalley","Girl in Back Alley","Kỷ luật",{c:100,a:"low",hot:[35,5]}],
+["honoka","Honoka","Streamer nhiều fan Bự",{hi:{regen:30}}],["nhatky","Cô giáo viết nhật ký yêu","Nhật Kí Yêu",{c:100,a:"top",en:200}],
+["wonder","Wonder Lady and SuperGirl","Bộ đôi anh hùng kì lạ",{c:100,mul:500,k:2,p:"rand"}],
+["momiji","Momiji, Ayane, Honoka","Chống lại gương",{c:100,a:"self",sl:20,bf:{red:95},t:2}],["mari","Mari's","Máy lạnh chảy nước",{top:{ls:200}}],
+["playroom","2 Girl Play Room","Phòng Vui Chơi",{c:100,a:"top",bf:{atk:125},t:2}],["yukino","Yukino","Bị thôi miên",{m:{hp:65}}],
+["consult","2 Girl Consultation Room","Chữa trị binh lực",{c:100,a:"low",hl:80}],["sugimoto","Dr Sugimotos","Phương pháp điều trị",{c:100,a:"low",ha:500}],
+["analysis","Analysis Girl","Phân tích binh lực",{c:50,mul:50,k:1,p:"rand",cl:1}],["snowgirl","Project Snow Girl","Giấc mơ đêm tuyết",{c:100,a:"self",bf:{atk:100},t:2}],
+["rena","Rena","Chạy 100m siêu nhanh",{tm:{spd:50}}],["ashelia","Ashelia","Đêm dính bẫy",{inv:99999,m:{red:20}}],
+["steal","Steal girl","Nhiệm vụ thất bại",{c:200,a:"top",bf:{red:80},t:3}],["succangel","Succubus Angel","Hút sinh lực thần",{c:100,k:99,cl:1,sh:50}],
+["succdemon","Succubus Demons","Hút sinh lực quỷ",{c:100,k:99,cl:1,burn:5}],["harley","Harley Quinn","Đêm đỏ",{c:150,a:"self",bf:{red:85},t:2}],
+["doree","Doree The Explorer","Thám hiểm",{m:{hp:75}}],["marvel","Captain Marvel","Báo Thù",{m:{ctr:150,multi:50}}],
+["amusteven","Amusteven - Angelita","Chống cự yếu ớt",{m:{red:75}}],["yuika","YuiKa và chị","Chăm sóc tình cảm",{top:{ctr:150}}],
+["helena","Helena Douglas Severance","Bồi thường",{c:50,sl:60,a:"all",hl:50}],["mila","Mila Red Riding Hood","Khăn nhuốm máu",{m:{red:60}}],
+["cheeky","Cheeky Girl","Gian lận",{top:{ls:150}}],["tifan","TifaN","Cố gắng đến cùng",{c:100,a:"self",hl:50}],
+["pizza","2 Pizza Takeout","Pizza",{top:{multi:250}}],["rina","Rina to Ana","Khe hở",{top2:{atk:75}}],
+["trainer","Sexy trainer Shoko Sugimoto","Gym",{tm:{atk:50}}],["horny","Cô gái bí ẩn","Bắt tại trận",{c:100,mul:50,k:1,gh:3,cl:1}],
+["wip","Work in progress","Làm thêm",{gr:["red",15,1e9]}],["shita","Shita Joshi","Đi tàu điện giá rẻ",{c:100,a:"topatk",fa:500,t:2}]
+].forEach((r,i)=>H.push({id:r[0],t:"EV",n:r[1],e:EJ[i%8],s:[Object.assign({n:r[2]},r[3])]}));
+H.forEach(h=>h.s.forEach(x=>{if(!x.d)x.d=mota(x)}));
+const HM={};H.forEach(h=>HM[h.id]=h);
+// ----- HÌNH TƯỚNG: đặt ảnh vào thư mục "hinh", tên theo mã tướng (ví dụ hinh/quan.jpg hoặc hinh/quan.png). Thiếu ảnh thì hiện biểu tượng -----
+const IMG={};
+// Tìm ảnh: k=0 là ảnh mặc định (quan.jpg), k>=1 là skin (quan-skin1.jpg, quan-skin2.jpg...). Thử .png, rồi .jpg, rồi .jpeg
+function timAnh(id,k,fn){const b="hinh/"+id+(k?"-skin"+k:"");
+ (function th(ds){if(!ds.length)return fn(null);const f=b+"."+ds[0],m=new Image();m.onload=()=>fn(f);m.onerror=()=>th(ds.slice(1));m.src=f})(["png","jpg","jpeg"])}
+const hinh=h=>{const k=(S.skin&&S.skin[h.id])||0,f=IMG[h.id+":"+k]||(k?IMG[h.id+":0"]:null);return f?'<img src="'+f+'" alt="'+h.n+'">':h.e};
+const byT=(a,b)=>TH.indexOf(a.t)-TH.indexOf(b.t);
+
+// ===== 2. DỮ LIỆU NGƯỜI CHƠI (tự lưu trên trình duyệt) =====
+let S;try{S=JSON.parse(localStorage.getItem("3q3"))}catch(e){}
+if(!S||!S.own)S={ai:1,vang:0,kc:0,chia:0,mo:{},thu:1,tg:Date.now(),sh:{},own:{quan:{lv:1,b:0},lu:{lv:1,b:0},trieu:{lv:1,b:0}},form:["quan","lu",null,"trieu",null,null,null,null,null]};
+for(const id in S.own)if(!HM[id])delete S.own[id];
+for(const id in S.sh)if(!HM[id])delete S.sh[id];
+S.form=S.form.map(id=>id&&HM[id]&&S.own[id]?id:null);
+if(!S.skin)S.skin={};
+if(!S.mo)S.mo={};
+if(S.chia===undefined)S.chia=S.thu?0:100; // tài khoản đã nhận thư tân thủ từ bản cũ được tặng 100 chìa khóa
+for(const id in S.skin)if(!HM[id])delete S.skin[id];
+H.forEach(h=>{const k=S.skin[h.id]||0,xong=()=>{if(typeof capNhat==="function")capNhat()};
+ timAnh(h.id,k,f=>{if(f){IMG[h.id+":"+k]=f;xong()}else if(k)timAnh(h.id,0,g=>{if(g){IMG[h.id+":0"]=g;xong()}})})});
+const luu=()=>{try{localStorage.setItem("3q3",JSON.stringify(S))}catch(e){}};
+
+function fmt(n){n=Math.floor(n);for(const[v,s]of[[1e12,"T"],[1e9,"B"],[1e6,"M"],[1e3,"k"]])if(n>=v)return Math.floor(n/v*100)/100+s;return""+n}
+// Chỉ số theo cấp: công 100+10×cấp, máu 1000+100×cấp, tốc độ 100+1×cấp
+const cs=lv=>({atk:100+10*lv,hp:1000+100*lv,spd:100+lv});
+function chiSo(id,lv){const b=cs(lv),m={atk:0,hp:0,spd:0,dodge:0,hit:0,crit:0,red:0,ls:0,ctr:0,multi:0,regen:0};
+ HM[id].s.forEach(s=>{for(const k in s.m||{})m[k]+=s.m[k];for(const k in s.tm||{})m[k]+=s.tm[k]});
+ return{atk:Math.round(b.atk*(1+m.atk/100)),hp:Math.round(b.hp*(1+m.hp/100)),spd:Math.round(b.spd*(1+m.spd/100)),dodge:m.dodge,hit:100+m.hit,crit:m.crit,red:m.red,ls:m.ls,ctr:m.ctr,multi:m.multi,regen:m.regen}}
+// Lực chiến: 1 công = 1, 10 máu = 1, 10 tốc độ = 1. Cả đội = tổng các tướng đang lắp.
+const lucHero=id=>{const c=chiSo(id,S.own[id].lv);return Math.round(c.atk+c.hp/10+c.spd/10)};
+const lucDoi=()=>S.form.reduce((a,id)=>a+(id&&S.own[id]?lucHero(id):0),0);
+const hud=()=>{$("tin").innerHTML="Ải <b>"+S.ai+"</b>"+(S.ai%10===0?" 👑":"")+" 💰"+fmt(S.vang)+" 💎"+fmt(S.kc)+" 🔑"+fmt(S.chia)+" 🔥"+fmt(lucDoi())};
+const ghi=t=>$("tt").textContent=t;
+
+// ===== 3. TRẬN ĐẤU =====
+let US=[],SL=[];
+const dung=ms=>new Promise(r=>setTimeout(r,ms));
+const rnd=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(p=>p[1]);
+const ds=a=>US.filter(x=>x.side!==a.side&&!x.dead);
+
+function taoU(id,lv,side,slot,boss){
+ return{h:HM[id],side,slot,lv,boss:!!boss,m:{atk:0,hp:0,spd:0,dodge:0,hit:0,crit:0,red:0,ls:0,ctr:0,multi:0,regen:0},g:{atk:0,regen:0},tmr:[],bt:[],hot:[],burn:[],gh:null,frz:0,stun:0,inv:0,en:50,hp:1,maxHp:1,dead:false,st:{d:0,h:0,n:0}}}
+function chuanBi(us){
+ us.forEach(u=>{u.h.s.forEach(s=>{
+   for(const k in s.m||{})u.m[k]+=s.m[k];
+   for(const k in s.tm||{})us.forEach(x=>x.m[k]+=s.tm[k]);
+   if(s.inv)u.inv=Math.max(u.inv,s.inv);if(s.en0)u.en+=s.en0;
+   ["exe","hs","nb","kill","gr","lo","ia"].forEach(k=>{if(s[k])u[k]=s[k]});if(s.c)u.act=s});
+  if(u.boss){u.m.crit+=20;u.m.dodge+=10;u.m.hit+=49;u.m.ctr+=20}});
+ us.forEach(u=>{u.maxHp=Math.round(cs(u.lv).hp*(1+u.m.hp/100));u.hp=u.maxHp});
+ const lc=u=>ef(u,"atk")+u.maxHp/10+ef(u,"spd")/10;
+ us.forEach(u=>{const o=us.filter(x=>x!==u).sort((a,b)=>lc(b)-lc(a)),pb=(l,m)=>l.forEach(t=>{for(const k in m)t.m[k]+=m[k]});
+  u.h.s.forEach(s=>{if(s.top)pb(o.slice(0,1),s.top);if(s.top2)pb(o.slice(0,2),s.top2);if(s.hi)pb(o.slice().sort((a,b)=>b.maxHp-a.maxHp).slice(0,1),s.hi)})})}
+
+function ef(u,k){let p=u.m[k]+(u.g[k]||0);if(k==="atk")p+=u.tmr.reduce((a,t)=>a+t.p,0);
+ if(u.lo&&u.hp<u.maxHp*u.lo[0]/100)p+=k==="atk"?u.lo[1]:k==="spd"?u.lo[2]:0;
+ return cs(u.lv)[k]*(1+p/100)}
+
+function chon(l,k,p){const s=l.filter(x=>!x.dead);if(p==="low")return s.sort((a,b)=>a.hp-b.hp).slice(0,k);if(p==="rand")return rnd(s).slice(0,k);
+ return rnd(s.filter(x=>x.slot<=3)).concat(rnd(s.filter(x=>x.slot>3))).slice(0,k)} // ưu tiên hàng thủ (ô 1-3)
+
+function hoi(u,v,src){if(u.dead)return;v=Math.round(v*(1-0.36*(u.gh?u.gh.n:0)));const r=Math.max(0,Math.min(v,u.maxHp-u.hp));u.hp+=r;src.st.h+=r;if(r)pop(u,"+"+fmt(r),"#6f6")}
+function chet(u){u.dead=true;u.hp=0;US.filter(x=>x.side!==u.side&&!x.dead&&x.kill).forEach(x=>x.tmr.push({p:x.kill[0],t:x.kill[1]}))}
+// hiệu ứng: burn=thiêu đốt, cl=xóa năng lượng, gh=giảm hồi máu, st=choáng. Vô địch miễn nhiễm; boss miễn choáng và giảm hồi máu
+function vd(u,n){u.inv=Math.max(u.inv,n);u.burn=[];u.gh=null} // Vô địch: xóa Thiêu Đốt và Giảm Hồi Máu đang có
+function hu(a,t,e){if(t.dead||t.inv>0)return;
+ if(e.fz&&!t.boss){t.burn=[];t.stun=Math.max(t.stun,e.fz);t.frz=Math.max(t.frz,e.fz)} // Đóng Băng: xóa Thiêu Đốt, Choáng, không nhận thêm buff
+ if(e.burn)t.burn.push({n:e.burn,a:ef(a,"atk"),src:a});
+ if(e.cl)t.en=Math.max(0,t.en-50);
+ if(e.gh&&!t.boss)t.gh={n:Math.min(2,(t.gh?t.gh.n:0)+1),t:e.gh};
+ if(e.st&&!t.boss)t.stun=Math.max(t.stun,e.st)}
+
+function gay(a,t,mul,o){
+ if(t.dead)return 0;
+ const kl=(o.kl||(a.exe&&t.hp<t.maxHp*a.exe/100))&&!(t.inv>0);let d,crit=false;
+ if(kl)d=t.maxHp; // Kết Liễu: bỏ qua né, giảm sát thương, phản đòn
+ else{
+  if(o.n&&Math.random()*100<Math.min(99,Math.max(0,t.m.dodge-a.m.hit))){pop(t,"Né","#9cf");return 0}
+  d=ef(a,"atk")*mul/100;
+  if(o.n&&Math.random()*100<Math.min(100,a.m.crit)){d*=2;crit=true}
+  d*=1-Math.min(99,t.m.red)/100}
+ d=Math.max(1,Math.round(d));t.hp-=d;a.st.d+=d;t.st.n+=d;
+ pop(t,(crit?"💥":kl?"☠️":"-")+fmt(d),kl?"#f0f":"#f66");
+ if(o.n&&a.m.ls>0)hoi(a,d*a.m.ls/100,a);
+ if(t.hs&&Math.random()*100<t.hs&&!a.dead)hu(t,a,{st:1});
+ if(t.hp<=0)chet(t);
+ else if(o.n&&!o.c&&!kl&&!a.dead){const n=Math.floor(t.m.ctr/100)+(Math.random()*100<t.m.ctr%100?1:0);for(let i=0;i<n&&!a.dead&&!t.dead;i++){t.en+=50;gay(t,a,100,{n:1,c:1})}} // phản đòn: trên 100% có thể đánh 2 lần, trên 200% đánh 3 lần...
+ return d}
+
+async function danhThuong(a){
+ const n=1+Math.floor(a.m.multi/100)+(Math.random()*100<a.m.multi%100?1:0); // liên kích
+ for(let i=0;i<n&&!a.dead;i++){
+  const t=chon(ds(a),1)[0];if(!t)break;
+  a.en+=50;await lao(a,t);chem(t);gay(a,t,100,{n:1});if(a.nb&&!t.dead)hu(a,t,a.nb);
+  capNhat();await dung(100)}}
+
+const luc=u=>ef(u,"atk")+u.maxHp/10+ef(u,"spd")/10;
+function chonA(a,w){const al=US.filter(x=>x.side===a.side&&!x.dead),o=al.filter(x=>x!==a),top=(l,n)=>l.slice().sort((p,q)=>luc(q)-luc(p)).slice(0,n);
+ if(w==="self")return[a];if(w==="all")return al;
+ if(w==="top")return o.length?top(o,1):[a];if(w==="top2")return o.length?top(o,2):[a];
+ if(w==="topatk")return o.length?o.slice().sort((p,q)=>ef(q,"atk")-ef(p,"atk")).slice(0,1):[a];
+ if(w==="selftop")return o.length?[a].concat(top(o,1)):[a];
+ return al.slice().sort((p,q)=>p.hp/p.maxHp-q.hp/q.maxHp).slice(0,w==="low2"?2:1)}
+function ap(a,t,s){
+ if(s.en)t.en+=s.en;
+ if(s.hl)hoi(t,t.maxHp*s.hl/100,a);
+ if(s.ha)hoi(t,ef(a,"atk")*s.ha/100,a);
+ if(t.frz>0)return;
+ if(s.hot)t.hot.push({p:s.hot[0],t:s.hot[1]}); // đang Đóng Băng: không nhận buff
+ if(s.inv)vd(t,s.inv+(t===a?1:0));
+ const dd=(k,v)=>{t.m[k]+=v;if(s.t)t.bt.push({k:k,v:v,t:s.t})};
+ if(s.bf)for(const k in s.bf)dd(k,s.bf[k]);
+ if(s.fa)dd("atk",ef(a,"atk")*s.fa/cs(t.lv).atk)}
+async function chieu(a,s){
+ a.en-=s.c;
+ if(s.heal){const al=US.filter(x=>x.side===a.side&&!x.dead).sort((p,q)=>p.hp/p.maxHp-q.hp/q.maxHp)[0];await tia(a,[al],"#6f6");hoi(al,ef(a,"atk")*s.mul/100,a);return}
+ if(s.k||s.mul){const tg=chon(ds(a),s.k||1,s.p);await tia(a,tg,"#f33");
+  tg.forEach(t=>{if(s.mul)gay(a,t,s.mul,{kl:s.kl&&t.hp<t.maxHp*s.kl/100});hu(a,t,s);if(s.eh)a.en+=s.eh})}
+ if(s.sl)a.hp=Math.max(1,a.hp-Math.round(a.maxHp*s.sl/100));
+ if(s.a){const tg=chonA(a,s.a),o=tg.filter(x=>x!==a);if(o.length)await tia(a,o,"#6f6");tg.forEach(t=>ap(a,t,s))}
+ if(s.sh)hoi(a,a.maxHp*s.sh/100,a);
+ if(a.ia)vd(a,a.ia+1)}
+
+async function luot(u){
+ u.en=Math.min(500,u.en);let bd=0;
+ u.burn.forEach(b=>{if(!(u.inv>0)){const d=Math.round(b.n*0.25*b.a);u.hp-=d;b.src.st.d+=d;u.st.n+=d;bd+=d}b.n--});
+ u.burn=u.burn.filter(b=>b.n>0);if(bd)pop(u,"🔥-"+fmt(bd),"#f80");
+ if(u.hp<=0){chet(u);return}
+ const rg=u.m.regen+u.g.regen;if(rg)hoi(u,u.maxHp*rg/100,u);
+ u.hot.forEach(h=>{hoi(u,u.maxHp*h.p/100,u);h.t--});u.hot=u.hot.filter(h=>h.t>0);
+ if(u.gr){if(u.gr[0]==="red")u.m.red+=u.gr[1];else u.g[u.gr[0]]=Math.min(u.gr[2],u.g[u.gr[0]]+u.gr[1])}
+ capNhat();
+ if(u.stun>0){u.stun--;pop(u,"💫","#ff0")}
+ else if(u.act&&u.en>=u.act.c)await chieu(u,u.act);else await danhThuong(u);
+ u.tmr.forEach(t=>t.t--);u.tmr=u.tmr.filter(t=>t.t>0);
+ u.bt.forEach(b=>b.t--);u.bt=u.bt.filter(b=>{if(b.t<=0){u.m[b.k]-=b.v;return false}return true});
+ if(u.frz>0)u.frz--;if(u.inv>0)u.inv--;if(u.gh&&--u.gh.t<=0)u.gh=null}
+
+function dungBi(){
+ const ta=[];S.form.forEach((id,i)=>{if(id&&S.own[id])ta.push(taoU(id,S.own[id].lv,"ta",i+1))});
+ const boss=S.ai%10===0,pool=S.ai<=100?["D"]:S.ai<=500?["C"]:S.ai<=1000?["B"]:["A","S"],hs=H.filter(h=>pool.includes(h.t)),dich=[];
+ if(boss){const bt=S.ai<=100?"C":S.ai<=500?"B":S.ai<=1000?"A":S.ai<=5000?"S":"LR";dich.push(taoU(rnd(H.filter(h=>h.t===bt))[0].id,Math.ceil(S.ai*1.1),"dich",2,true))}
+ else rnd([1,2,3,4,5,6,7,8,9]).slice(0,5).forEach(sl=>dich.push(taoU(rnd(hs)[0].id,S.ai,"dich",sl)));
+ chuanBi(ta);chuanBi(dich);US=ta.concat(dich);
+ [["gt","ta",[6,3,0]],["gd","dich",[0,3,6]]].forEach(([g,sd,bs])=>{$(g).innerHTML="";
+  for(let r=0;r<3;r++)for(let c=0;c<3;c++){const e=document.createElement("div");e.className="the";e.dataset.s=bs[c]+r+1;e.dataset.p=sd;$(g).appendChild(e)}});
+ US.forEach(u=>u.el=document.querySelector('[data-p="'+u.side+'"][data-s="'+u.slot+'"]'));
+ return ta.length>0}
+
+function cn(u){if(!u.el)return;u.en=Math.max(0,Math.min(500,u.en));const b=[],bn=u.burn.reduce((a,x)=>a+x.n,0);
+ if(bn)b.push("🔥"+bn);if(u.gh)b.push('<span style="color:red">✚</span>'+u.gh.n);
+ if(u.g.atk>0||u.tmr.length||u.bt.length)b.push("⚔️");if(u.m.red>0)b.push("🛡️");if(u.m.regen+u.g.regen>0)b.push("💚");if(u.inv>0)b.push("⭐");if(u.stun>0)b.push("💫");if(u.frz>0)b.push("❄️");
+ u.el.style.opacity=u.dead?.35:1;u.el.style.filter=u.dead?'grayscale(1)':'';u.el.className=u.dead?'the':'the song';
+ u.el.innerHTML='<div class="av" style="border-color:'+MAU[u.h.t]+'">'+hinh(u.h)+'</div><div class="hp"><i style="width:'+Math.max(0,u.hp/u.maxHp*100)+'%"></i></div><div class="en"><i style="width:'+u.en/5+'%"></i><b>'+Math.floor(u.en)+'</b></div><div class="bd">'+b.join(" ")+'</div>'}
+const capNhat=()=>US.forEach(cn);
+
+function chem(t){const q=t.el.getBoundingClientRect(),d=document.createElement("div");d.className="chem";d.style.cssText="left:"+(q.left+q.width/2-30)+"px;top:"+(q.top+q.height/2-30)+"px";document.body.appendChild(d);
+ d.animate([{transform:"scale(.3) rotate(-20deg)",opacity:1},{transform:"scale(1.3) rotate(10deg)",opacity:0}],{duration:300}).finished.then(()=>d.remove())}
+async function lao(a,t){const p=a.el.getBoundingClientRect(),q=t.el.getBoundingClientRect();a.el.style.zIndex=5;
+ await a.el.animate([{transform:"none"},{transform:"translate("+(q.left-p.left)*.8+"px,"+(q.top-p.top)*.8+"px)"},{transform:"none"}],{duration:350}).finished;a.el.style.zIndex=""}
+async function tia(a,ts,mau){const p=a.el.getBoundingClientRect();
+ await Promise.all(ts.map(t=>{const q=t.el.getBoundingClientRect(),d=document.createElement("div");d.className="tia";
+  d.style.cssText="left:"+(p.left+p.width/2)+"px;top:"+(p.top+p.height/2)+"px;background:"+mau;document.body.appendChild(d);
+  return d.animate([{transform:"none"},{transform:"translate("+(q.left-p.left)+"px,"+(q.top-p.top)+"px)"}],{duration:400}).finished.then(()=>d.remove())}))}
+function pop(u,tx,mau){if(!u.el)return;const q=u.el.getBoundingClientRect(),d=document.createElement("div");d.className="pop";d.textContent=tx;
+ d.style.cssText="left:"+q.left+"px;top:"+q.top+"px;color:"+mau;document.body.appendChild(d);
+ d.animate([{transform:"none",opacity:1},{transform:"translateY(-24px)",opacity:0}],{duration:800}).finished.then(()=>d.remove())}
+
+async function tran(){
+ if(!dungBi()){ghi("Hãy lắp tướng vào Đội hình!");US.forEach(cn);await dung(2000);return}
+ capNhat();hud();ghi((S.ai%10===0?"👑 Ải "+S.ai+" - BOSS!":"⚔️ Đang đánh ải "+S.ai));await dung(800);
+ const con=sd=>US.some(u=>u.side===sd&&!u.dead);let kq=null,r=0;
+ while(!kq){if(++r>60){kq="thua";break}
+  for(const u of US.filter(x=>!x.dead).sort((a,b)=>ef(b,"spd")-ef(a,"spd"))){
+   if(u.dead)continue;await luot(u);capNhat();
+   if(!con("ta")||!con("dich")){kq=con("ta")?"thang":"thua";break}await dung(150)}}
+ if(kq==="thang"){S.vang+=S.ai;let t="🏆 Thắng ải "+S.ai+"! +"+S.ai+" vàng";if(S.ai%10===0){S.kc+=10;t+=" +10 kim cương"}ghi(t);if(S.ai<10000)S.ai++}
+ else{S.vang+=S.ai-1;ghi("😢 Thua ải "+S.ai+" (+"+(S.ai-1)+" vàng). Tự động đánh lại...")}
+ SL=US.map(u=>({n:u.h.n,e:u.h.e,s:u.side,d:u.st.d,h:u.st.h,nh:u.st.n}));
+ luu();hud();await dung(1800)}
+(async function(){hud();while(true)await tran()})();
+
+// ===== 4. CÁC BẢNG (đè lên màn hình, có nút Đóng, kéo xuống để xem thêm) =====
+function mo(t,h){$("ten").textContent=t;$("nd").innerHTML=h;$("ov").style.display="flex"}
+function dong(){$("ov").style.display="none";$("nd").innerHTML=""}
+const chip=(h,x)=>'<div class="chip" style="border-color:'+MAU[h.t]+'" '+(x||"")+'>'+hinh(h)+'<small>'+h.n+'</small></div>';
+function them(id){if(S.own[id]){S.sh[id]=(S.sh[id]||0)+10;return"đã có → +10 mảnh"}S.own[id]={lv:1,b:0};return"MỚI!"}
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+
+// ===== CÂU CHUYỆN =====
+// Cách thêm video: đặt tập tin trong thư mục "video", tên = mã tướng + số thứ tự, ví dụ quan1.mp4, quan2.mp4, quan3.mp4 ...
+// (đánh số liên tục từ 1, game tự tìm và hiện). Không cần sửa code.
+// Đoạn chữ giới thiệu từng tướng (không bắt buộc): thêm một dòng  mã:"chữ",
+const GT={
+ quan:"Quan Công, vị tướng trung nghĩa, bị cuốn vào cổng Đa Vũ Trụ. (Bạn hãy thay đoạn chữ này bằng câu chuyện của mình.)"
+};
+function pCau(){const l=H.slice().sort(byT);
+ mo("📖 Câu chuyện",'<small>Chạm vào một tướng để xem câu chuyện và video về họ.</small><div class="ds" style="margin-top:8px">'+
+  l.map(h=>chip(h,"onclick=\"pCauT('"+h.id+"')\"")).join("")+"</div>")}
+const VDS={};
+function pCauT(id){const h=HM[id];
+ mo(h.e+" "+h.n,'<div class="big" style="border-color:'+MAU[h.t]+'">'+hinh(h)+'</div><p style="color:'+MAU[h.t]+';text-align:center">Bậc '+bac(h.t)+" · Mã: <b>"+id+"</b></p>"+
+  (GT[id]?'<div style="font-size:14px;margin:8px 0">'+GT[id]+"</div>":"")+"<h4>🎬 Video</h4>"+
+  '<div id="dsv" data-id="'+id+'"><p class="msg">⏳ Đang tìm video...</p></div><button onclick="pCau()">← Danh sách tướng</button>');
+ timV(id,1,[])}
+function veV(id,m){const e=$("dsv");if(!e||e.dataset.id!==id)return;const ds=VDS[id]||[];
+ e.innerHTML='<p>🔑 Chìa khóa: <b>'+S.chia+'</b><br><small>Mỗi video mở khóa 1 lần (tốn 1🔑), sau đó xem lại thoải mái. Mua thêm ở 🛒 Cửa hàng.</small></p>'+(m?'<div class="msg">'+m+"</div>":"")+
+  (ds.length?ds.map(n=>'<div class="r"><span>Video '+n+'</span>'+(S.mo["v:"+id+":"+n]?'<button onclick="pVid(\''+id+"',"+n+')">▶ Xem</button>':'<button onclick="moKhoa(\'v\',\''+id+"',"+n+')">🔓 Mở khóa (1🔑)</button>')+"</div>").join(""):
+   '<p class="msg">Chưa có video cho tướng này.</p><small>Để thêm video: đặt tập tin tên <b>'+id+'1.mp4</b> (rồi '+id+'2.mp4, '+id+'3.mp4...) vào thư mục video của game.</small>')}
+// Tìm lần lượt id1.mp4, id2.mp4,... cho đến khi không còn tập tin (chỉ đọc thông tin đầu video, chưa tải cả video)
+function timV(id,k,ds){
+ const xong=()=>{VDS[id]=ds;veV(id)};
+ if(k>20)return xong();
+ const v=document.createElement("video");let da=false;
+ const kt=f=>{if(da)return;da=true;clearTimeout(t);v.onloadedmetadata=v.onerror=null;f()};
+ const t=setTimeout(()=>kt(xong),5000);
+ v.onloadedmetadata=()=>kt(()=>{ds.push(k);timV(id,k+1,ds)});
+ v.onerror=()=>kt(xong);
+ v.preload="metadata";v.src="video/"+id+k+".mp4"}
+// Mở khóa video hoặc skin: tốn 1 chìa khóa, mở một lần dùng mãi
+function moKhoa(l,id,k){const key=l+":"+id+":"+k;if(S.mo[key])return;
+ if(S.chia<1){const m="⚠️ Hết chìa khóa! Hãy mua thêm ở 🛒 Cửa hàng (10💎 / 1 chìa khóa).";return l==="v"?veV(id,m):veSkin(id,m)}
+ S.chia--;S.mo[key]=1;luu();hud();
+ if(l==="v")veV(id,"🔓 Đã mở khóa Video "+k+"!");else veSkin(id,"🔓 Đã mở khóa Skin "+k+"! Chạm vào skin để dùng.")}
+function pVid(id,k){if(!S.mo["v:"+id+":"+k])return;
+ mo(HM[id].n+" - Video "+k,'<video id="vd" src="video/'+id+k+'.mp4" controls autoplay playsinline preload="auto" onerror="vdLoi()" style="width:100%;max-height:60vh;background:#000;border-radius:8px"></video>'+
+  '<div style="margin:8px 0"><button onclick="toanMan()">⛶ Toàn màn hình</button> <button onclick="pCauT(\''+id+'\')">← Quay lại</button></div>')}
+function vdLoi(){const v=$("vd");if(v)v.outerHTML='<div class="msg">⚠️ Không mở được video. Hãy kiểm tra: tập tin có đúng tên, nằm trong thư mục "video" cạnh index.html, và là định dạng .mp4.</div>'}
+function toanMan(){const v=$("vd");if(!v)return;const f=v.requestFullscreen||v.webkitRequestFullscreen||v.webkitEnterFullscreen;if(f)f.call(v)}
+
+function pCD(){const sl=SL.slice().sort((a,b)=>b.d-a.d);
+ mo("⚙️ Cài đặt",'<div class="r">🔥 Lực chiến người chơi<b>'+fmt(lucDoi())+'</b></div><small>Một tướng: 1 công = 1; 10 máu = 1; 10 tốc độ = 1. Cả đội = tổng các tướng đang lắp.</small><h4>📊 Số liệu ải trước</h4>'+
+ (sl.length?'<table><tr><th>Tướng</th><th>Gây ST</th><th>Hồi</th><th>Nhận ST</th></tr>'+sl.map(x=>'<tr><td>'+(x.s==="ta"?"🟦":"🟥")+x.e+" "+x.n+'</td><td>'+fmt(x.d)+'</td><td>'+fmt(x.h)+'</td><td>'+fmt(x.nh)+'</td></tr>').join("")+'</table>':"<p>Chưa có ải nào kết thúc.</p>"))}
+
+function pThu(){mo("✉️ Thư",S.thu?'<div class="r"><div>🎁 Quà chào mừng tân thủ<br><small>100💎 + 1000🔑</small></div><button onclick="nhanThu()">Nhận</button></div>':"<p>Không có thư.</p>")}
+function nhanThu(){S.kc+=100;S.chia+=1000;S.thu=0;luu();hud();mo("✉️ Thư",'<p class="msg">Đã nhận 100💎 và 1000🔑!</p>')}
+
+function pShop(m){mo("🛒 Cửa hàng",'<p>💎 '+S.kc+' &nbsp; 🔑 '+S.chia+' <span class="msg">'+(m||"")+'</span></p><div class="r">1 Chìa khóa (mở skin, video)<button onclick="muaChia()">10💎</button></div><div class="r">1 Mảnh LR ngẫu nhiên<button onclick="mua(\'LR\',20)">20💎</button></div><div class="r">1 Mảnh S ngẫu nhiên<button onclick="mua(\'S\',5)">5💎</button></div>')}
+function muaChia(){if(S.kc<10)return pShop("⚠️ Không đủ kim cương");S.kc-=10;S.chia++;luu();hud();pShop("Nhận 1 chìa khóa 🔑")}
+function mua(t,g){if(S.kc<g)return pShop("⚠️ Không đủ kim cương");S.kc-=g;const x=pick(H.filter(h=>h.t===t));S.sh[x.id]=(S.sh[x.id]||0)+1;luu();hud();pShop("Nhận 1 mảnh "+x.n)}
+
+const bac=t=>t==="EV"?"Special":t;
+function rollT(){const r=Math.random()*100;return r<30?"C":r<60?"B":r<80?"A":r<95?"S":"LR"}
+function hienKQ(kq){return '<div class="ds">'+kq.map(k=>chip(k.x)).join("")+"</div>"+kq.map(k=>'<div class="r"><span style="color:'+MAU[k.x.t]+'">'+k.x.e+" "+k.x.n+" ("+bac(k.x.t)+")</span><small>"+k.r+"</small></div>").join("")}
+function pQuay(r){mo("🎰 Quay tướng",'<h4>Quay thường</h4><p>💎 '+fmt(S.kc)+'</p><button onclick="quay(1)">1 lần (100💎)</button> <button onclick="quay(10)">10 lần (900💎)</button><p><small>Tỉ lệ: C 30% · B 30% · A 20% · S 15% · LR 5% · Special 0%. Trùng tướng → 10 mảnh.</small></p>'+
+ '<h4>Quay tướng Special</h4><p>🔑 '+fmt(S.chia)+'</p><button onclick="quaySp(1)">1 lần (10🔑)</button> <button onclick="quaySp(10)">10 lần (90🔑)</button><p><small>Tỉ lệ: Special 99% · LR 1%. Trùng tướng → 10 mảnh. Mua chìa khóa ở 🛒.</small></p>'+(r||""))}
+function lam(n,f){const kq=[];for(let i=0;i<n;i++){const x=f();kq.push({x:x,r:them(x.id)})}luu();hud();pQuay(hienKQ(kq))}
+function quay(n){const g=n===1?100:900;if(S.kc<g)return pQuay('<p class="msg">⚠️ Không đủ kim cương</p>');S.kc-=g;lam(n,()=>pick(H.filter(h=>h.t===rollT())))}
+function quaySp(n){const g=n===1?10:90;if(S.chia<g)return pQuay('<p class="msg">⚠️ Không đủ chìa khóa</p>');S.chia-=g;lam(n,()=>pick(H.filter(h=>h.t===(Math.random()<0.99?"EV":"LR"))))}
+
+let sel=0;
+function pDoiHinh(m){const cl=[[7,8,9],[4,5,6],[1,2,3]];let g='<div class="fg">';
+ for(let r=0;r<3;r++)for(let c=0;c<3;c++){const s=cl[c][r],id=S.form[s-1];g+='<div class="o'+(sel===s?" sel":"")+'" onclick="clickO('+s+')"><b>'+s+"</b>"+(id?hinh(HM[id]):"")+"</div>"}
+ const l=H.filter(h=>S.own[h.id]&&!S.form.includes(h.id)).sort(byT);
+ mo("🧩 Đội hình",'<small>Ô 1-2-3 (bên phải) là hàng thủ, 4-5-6 giữa, 7-8-9 phía sau. Chạm ô trống để chọn ô, chạm ô có tướng để tháo xuống. Tối đa 5 tướng, đội hình mới áp dụng từ trận kế tiếp.</small>'+(m?'<div class="msg">'+m+"</div>":"")+g+"</div><h4>Danh sách tướng</h4><div class='ds'>"+l.map(h=>chip(h,"onclick=\"lap('"+h.id+"')\"")).join("")+"</div>")}
+function clickO(s){if(S.form[s-1]){S.form[s-1]=null;luu();hud()}else sel=sel===s?0:s;pDoiHinh()}
+function lap(id){if(S.form.filter(x=>x).length>=5)return pDoiHinh("⚠️ Đã đủ 5 tướng, hãy tháo bớt.");
+ const s=sel&&!S.form[sel-1]?sel:S.form.findIndex(x=>!x)+1;S.form[s-1]=id;sel=0;luu();hud();pDoiHinh()}
+
+let mk=-1;
+function pNC(){const l=H.filter(h=>S.own[h.id]).sort((a,b)=>lucHero(b.id)-lucHero(a.id));mo("⬆️ Nâng cấp",'<div class="ds">'+l.map(h=>chip(h,"onclick=\"mk=-1;pCT('"+h.id+"')\"").replace("</small></div>","</small><small>Lv "+S.own[h.id].lv+" · 🔥"+fmt(lucHero(h.id))+"</small></div>")).join("")+"</div>")}
+function pCT(id,m){const h=HM[id],o=S.own[id],cap=Math.min(10000,100*(o.b+1)),c=chiSo(id,o.lv);let bt;
+ if(o.lv>=10000)bt="Đã đạt cấp tối đa";
+ else if(o.lv>=cap)bt='<button onclick="dotPha(\''+id+'\')">Đột phá giới hạn ('+(10+o.b)+" mảnh, có "+(S.sh[id]||0)+")</button>";
+ else bt='<button onclick="nang(\''+id+'\')">Nâng 1 cấp ('+fmt(1+o.lv)+" 💰)</button> <button onclick=\"nangNhanh(\'"+id+"\')\">⏩ Nâng nhanh (100 cấp)</button>";
+ const sk=h.s.map((s,i)=>'<div class="sk" onclick="mk=mk==='+i+"?-1:"+i+";pCT('"+id+"')\"><span class='ic'>"+(s.c?"💥":"✨")+"</span>"+s.n+(mk===i?"<br><small>"+(s.c?"Chủ động — tiêu hao "+s.c+" năng lượng":"Bị động")+"<br>"+s.d+"</small>":"")+"</div>").join("");
+ const st=[["Công",fmt(c.atk)],["Máu",fmt(c.hp)],["Tốc độ",fmt(c.spd)],["Tỉ lệ né",c.dodge+"%"],["Tỉ lệ trúng",c.hit+"%"],["Tỉ lệ chí mạng",c.crit+"%"],["Giảm sát thương",c.red+"%"],["Hút máu",c.ls+"%"],["Phản đòn",c.ctr+"%"],["Liên kích",c.multi+"%"],["Hồi máu theo lượt",c.regen+"%"]];
+ mo(h.e+" "+h.n,'<div class="big" style="border-color:'+MAU[h.t]+'">'+hinh(h)+'</div><p style="color:'+MAU[h.t]+'">Bậc '+bac(h.t)+" · Cấp <b>"+o.lv+"</b> / "+cap+" (đột phá "+o.b+" lần) · 🔥 "+fmt(lucHero(id))+"</p>"+(m?'<div class="msg">'+m+"</div>":"")+"<p>"+bt+'</p><button onclick="pNC()">← Danh sách</button> <button onclick="pSkin(\''+id+'\')">🎨 Skin</button> <button onclick=\"trungSinh(\''+id+'\')\">♻️ Trùng sinh</button><h4>Chiêu tướng</h4>'+sk+"<h4>Chỉ số</h4>"+st.map(x=>'<div class="r"><span>'+x[0]+"</span><b>"+x[1]+"</b></div>").join(""))}
+// ----- Skin: đặt ảnh skin vào thư mục hinh, tên = mã tướng + -skin + số (ví dụ quan-skin1.jpg, quan-skin2.jpg) -----
+const SKD={};
+function pSkin(id){const h=HM[id];
+ mo("🎨 Skin - "+h.n,'<div id="dsk" data-id="'+id+'"><p class="msg">⏳ Đang tìm skin...</p></div><button onclick="pCT(\''+id+'\')">← Quay lại</button>'+
+  '<p><small>Cách thêm skin: đặt ảnh tên <b>'+id+'-skin1.jpg</b> (rồi '+id+'-skin2.jpg, '+id+'-skin3.jpg...) vào thư mục hinh của game.</small></p>');
+ const ds=[],xong=()=>{ds.forEach(x=>{if(x.f)IMG[id+":"+x.k]=x.f});SKD[id]=ds;veSkin(id)};
+ timAnh(id,0,f0=>{ds.push({k:0,f:f0});(function nx(k){if(k>20)return xong();timAnh(id,k,f=>{if(f){ds.push({k:k,f:f});nx(k+1)}else xong()})})(1)})}
+function veSkin(id,m){const e=$("dsk");if(!e||e.dataset.id!==id)return;const h=HM[id],cur=S.skin[id]||0,ds=SKD[id]||[];
+ e.innerHTML='<p>🔑 Chìa khóa: <b>'+S.chia+'</b><br><small>Hình mặc định miễn phí. Mỗi skin mở khóa 1 lần (tốn 1🔑). Mua thêm ở 🛒 Cửa hàng.</small></p>'+(m?'<div class="msg">'+m+"</div>":"")+
+  (ds.length<2?'<p class="msg">Tướng này chưa có skin nào ngoài hình mặc định.</p>':"")+'<div class="ds" style="margin:8px 0">'+
+  ds.map(x=>{const kh=x.k===0||S.mo["s:"+id+":"+x.k];
+   return '<div class="chip" style="border-color:'+(cur===x.k?"#fde047":MAU[h.t])+(kh?"":";opacity:.6")+'" onclick="chonSkin(\''+id+"',"+x.k+')">'+(x.f?'<img src="'+x.f+'">':h.e)+"<small>"+(x.k?"Skin "+x.k:"Mặc định")+"</small>"+(cur===x.k?"<small>✔ Đang dùng</small>":kh?"":"<small>🔒 1🔑</small>")+"</div>"}).join("")+"</div>"}
+function chonSkin(id,k){
+ if(k&&!S.mo["s:"+id+":"+k]){if(confirm("Mở khóa Skin "+k+" bằng 1 chìa khóa?"))moKhoa("s",id,k);return}
+ if(k)S.skin[id]=k;else delete S.skin[id];luu();capNhat();veSkin(id)}
+
+const vangDa=lv=>{let g=0;for(let l=1;l<lv;l++)g+=1+l;return g},manhDa=b=>{let m=0;for(let j=0;j<b;j++)m+=10+j;return m};
+function nangNhanh(id){const o=S.own[id],cap=Math.min(10000,100*(o.b+1));let n=0,g=0;
+ while(n<100&&o.lv+n<cap&&g+1+o.lv+n<=S.vang){g+=1+o.lv+n;n++}
+ if(!n)return pCT(id,"⚠️ Không đủ vàng hoặc đã chạm giới hạn cấp (cần đột phá)");S.vang-=g;o.lv+=n;luu();hud();pCT(id,"⏩ Đã nâng "+n+" cấp (tốn "+fmt(g)+" 💰)")}
+function trungSinh(id){const o=S.own[id],v=vangDa(o.lv),m=manhDa(o.b);if(o.lv<=1&&!o.b)return pCT(id,"Tướng đang ở cấp 1.");
+ if(!confirm("Trùng sinh "+HM[id].n+"? Về cấp 1, hoàn trả "+fmt(v)+" vàng và "+m+" mảnh tướng đã dùng đột phá."))return;
+ S.vang+=v;S.sh[id]=(S.sh[id]||0)+m;o.lv=1;o.b=0;luu();hud();pCT(id,"♻️ Đã trùng sinh: hoàn "+fmt(v)+" 💰 và "+m+" mảnh tướng.")}
+function nang(id){const o=S.own[id],g=1+o.lv;if(S.vang<g)return pCT(id,"⚠️ Không đủ vàng");S.vang-=g;o.lv++;luu();hud();pCT(id)}
+function dotPha(id){const o=S.own[id],n=10+o.b;if((S.sh[id]||0)<n)return pCT(id,"⚠️ Không đủ mảnh tướng");S.sh[id]-=n;o.b++;luu();pCT(id,"✅ Đột phá thành công!")}
+
+// ----- Thu hoạch: tích vàng theo từng phút (cả khi mở game lẫn khi tắt trang), tối đa 16 giờ -----
+const TD=16*60,vph=()=>5+2*S.ai;
+const phutTich=()=>Math.max(0,Math.min(TD,Math.floor((Date.now()-S.tg)/60000)));
+function pTH(m){mo("🌾 Thu hoạch",'<div id="htxt" style="margin:8px 0"></div>'+(m?'<div class="msg">'+m+"</div>":"")+'<button onclick="thuHoach()">Nhận thu hoạch</button>');veTH()}
+function veTH(){const e=$("htxt");if(!e)return;const p=phutTich();
+ e.innerHTML="💰 Đã tích: <b>"+fmt(p*vph())+" vàng</b><br>⏱️ "+Math.floor(p/60)+" giờ "+p%60+" phút / tối đa 16 giờ<br>📈 Tốc độ: "+vph()+" vàng/phút (ải càng cao càng nhiều)"+(p>=TD?'<br><span class="msg">⚠️ Kho đã đầy, hãy nhận để tiếp tục tích!</span>':"")}
+setInterval(veTH,1000);
+function thuHoach(){const p=phutTich();if(p<1)return pTH("⏳ Chưa đủ 1 phút, đợi thêm nhé.");const v=p*vph();S.vang+=v;S.tg=Date.now();luu();hud();pTH("✅ Đã nhận "+fmt(v)+" vàng!")}
+
+function pBalo(m){const l=H.filter(h=>S.sh[h.id]>0).sort(byT);
+ mo("🎒 Balo",(m?'<div class="msg">'+m+"</div>":"")+(l.length?l.map(h=>'<div class="r"><span style="color:'+MAU[h.t]+'">'+h.e+" "+h.n+" ("+S.sh[h.id]+' mảnh)</span>'+(S.own[h.id]?"<small>Đã có tướng</small>":S.sh[h.id]>=10?'<button onclick="ghep(\''+h.id+'\')">Ghép</button>':"<small>Cần 10 mảnh</small>")+"</div>").join(""):"<p>Chưa có mảnh tướng.</p>"))}
+function ghep(id){S.sh[id]-=10;S.own[id]={lv:1,b:0};luu();pBalo("✅ Đã ghép được tướng "+HM[id].n+"!")}
+</script>
+</body>
+</html>
