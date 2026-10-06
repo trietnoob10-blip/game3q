@@ -4,8 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>3Q Đa Vũ Trụ Manga</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#12121c">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
 *{box-sizing:border-box}
+html,body{overscroll-behavior-y:contain}
 body{margin:0;font-family:Arial,sans-serif;background:#12121c;color:#fff}
 #game{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
 #top{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px;padding:8px;background:#1d1d30;font-size:12px}
@@ -485,6 +489,8 @@ function thuHoach(){const p=phutTich();if(p<1)return pTH("⏳ Chưa đủ 1 phú
 function pBalo(m){const l=H.filter(h=>S.sh[h.id]>0).sort(byT);
  mo("🎒 Balo",(m?'<div class="msg">'+m+"</div>":"")+(l.length?l.map(h=>'<div class="r"><span style="color:'+MAU[h.t]+'">'+h.e+" "+h.n+" ("+S.sh[h.id]+' mảnh)</span>'+(S.own[h.id]?"<small>Đã có tướng</small>":S.sh[h.id]>=10?'<button onclick="ghep(\''+h.id+'\')">Ghép</button>':"<small>Cần 10 mảnh</small>")+"</div>").join(""):"<p>Chưa có mảnh tướng.</p>"))}
 function ghep(id){S.sh[id]-=10;S.own[id]={lv:1,b:0};luu();pBalo("✅ Đã ghép được tướng "+HM[id].n+"!")}
+// Cho phép cài như ứng dụng (chỉ chạy khi mở bằng http/https, không chạy khi mở file trực tiếp)
+if("serviceWorker" in navigator&&location.protocol.indexOf("http")===0)navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
 </body>
 </html>
